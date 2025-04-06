@@ -7,12 +7,18 @@ const pathCharacter = '*';
 
 class Field {
   constructor(field) {
-    this.field = field;
+    this.originalField = Field.deepCopy(field);
+    this.field = Field.deepCopy(field);
     this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
     this.gameOver = false;
   }
 
+  static deepCopy(field) {
+    return field.map(row => row.slice());
+  }
+
   startGame() {
+    this.field = Field.deepCopy(this.originalField);
     this.playerPosition = [0, 0];
     this.gameOver = false;
     this.assessInput();
@@ -95,7 +101,7 @@ class Field {
       this.gameOver = true;
       
       setTimeout(() => {
-        console.log('As the impending apocalypse looms...');
+        console.log('As the impending Apocalypse looms...');
       }, 1750);
       setTimeout(() => {
         console.log('the possessor of Eternity will Reign Supreme.');
