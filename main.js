@@ -4,21 +4,60 @@ const hat = '^';
 const hole = 'O';
 const fieldCharacter = '░';
 const pathCharacter = '*';
+const initialField = [
+
+  ['*', '░', '░', '░', 'O', '░', '░', '░', '░', '░', '░'],
+  ['O', '░', 'O', 'O', '░', '░', 'O', '░', 'O', '░', '░'],
+  ['░', '░', '░', 'O', '░', 'O', '░', '░', '░', '░', 'O'],
+  ['░', 'O', 'O', '░', '░', 'O', '░', 'O', '░', 'O', '░'],
+  ['░', '░', '░', '░', 'O', '░', '░', '░', 'O', '░', '░'],
+  ['░', 'O', '░', 'O', '░', '░', 'O', 'O', '░', '░', '░'],
+  ['░', 'O', '░', 'O', '░', '░', '░', 'O', '^', 'O', '░'],
+  ['░', 'O', '░', 'O', '░', 'O', '░', '░', 'O', 'O', '░'],
+  ['░', '░', '░', 'O', '░', '░', 'O', '░', 'O', '░', '░'],
+  ['░', 'O', '░', '░', 'O', '░', '░', 'O', '░', '░', '░'],
+  ['O', '░', '░', 'O', '░', '░', '░', '░', '░', '░', '░'],
+];
 
 class Field {
-  constructor(field) {
-    this.originalField = Field.deepCopy(field);
-    this.field = Field.deepCopy(field);
+  constructor() {
+    this.field = initialField;
     this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
     this.gameOver = false;
   }
 
-  static deepCopy(field) {
-    return field.map(row => row.slice());
+  static generateField(height = 11, width = 11, ratio = 0.30) {
+    const newField = [];
+    for (let i = 0; i < height; i++) {
+      const row = [];
+      for (let j = 0; j < width; j++) {
+        if (Math.random() < ratio) {
+          row.push(hole);
+        } else {
+          row.push(fieldCharacter);
+        }
+      }
+      newField.push(row);
+    }
+    return newField;
   }
 
   startGame() {
-    this.field = Field.deepCopy(this.originalField);
+    const playerInput = prompt('Generate random field? ').toLowerCase();
+
+    if (playerInput === 'y' || playerInput === 'yes') {
+      const height = parseInt(prompt('Please enter a height: '));
+      const width = parseInt(prompt('Please enter a width: '));
+      const ratio = parseFloat(prompt('What percentage of holes? '));
+
+      if (typeof height === 'number' && typeof width === 'number' && typeof ratio === 'number' && ratio >= 0 && ratio < 1) {
+        this.field = Field.generateField(height, width, ratio);
+      } else {
+        console.log('Invalid input. Generating default field...');
+        this.field = initialField;
+      }
+    }
+
     this.playerPosition = [0, 0];
     this.gameOver = false;
     this.assessInput();
@@ -167,18 +206,5 @@ class Field {
   }
 }
 
-const myField = new Field([
-  ['*', '░', '░', '░', 'O', '░', '░', '░', '░', '░', '░'],
-  ['O', '░', 'O', 'O', '░', '░', 'O', '░', 'O', '░', '░'],
-  ['░', '░', '░', 'O', '░', 'O', '░', '░', '░', '░', 'O'],
-  ['░', 'O', 'O', '░', '░', 'O', '░', 'O', '░', 'O', '░'],
-  ['░', '░', '░', '░', 'O', '░', '░', '░', 'O', '░', '░'],
-  ['░', 'O', '░', 'O', '░', '░', 'O', 'O', '░', '░', '░'],
-  ['░', 'O', '░', 'O', '░', '░', '░', 'O', '^', 'O', '░'],
-  ['░', 'O', '░', 'O', '░', 'O', '░', '░', 'O', 'O', '░'],
-  ['░', '░', '░', 'O', '░', '░', 'O', '░', 'O', '░', '░'],
-  ['░', 'O', '░', '░', 'O', '░', '░', 'O', '░', '░', '░'],
-  ['O', '░', '░', 'O', '░', '░', '░', '░', '░', '░', '░'],
-]);
-
+const myField = new Field(initialField);
 myField.startGame();
