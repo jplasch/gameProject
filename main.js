@@ -9,12 +9,11 @@ class Field {
   constructor(field) {
     this.field = field;
     this.playerInput = null;
-    // Player position
-    // [y-coord, x-coord]
-    this.playerPosition = [0, 0];
+    this.playerPosition = [];   // [x-coord, y-coord] where x-axis is up/down and y-axis is left/right
   }
 
   startGame() {
+    this.playerPosition = [0, 0];
     this.print();
     this.assessInput();
   }
@@ -26,7 +25,9 @@ class Field {
   }
 
   assessInput() {
+    console.log(`Current position: ${this.playerPosition}`);
     const playerInput = prompt('Which way? ').toLowerCase();
+    
     switch (playerInput) {
       case 'u':
       case 'up':
@@ -51,15 +52,67 @@ class Field {
   }
 
   updatePosition(direction) {
-    console.log(`You went ${direction}.`);
+    // running but positions are not being updated correctly
+    switch (direction) {
+      case 'up':
+        this.playerPosition[0] -= 1;
+      case 'down':
+        this.playerPosition[0] += 1;
+      case 'left':
+        this.playerPosition[1] -+ 1;
+      case 'right':
+        this.playerPosition[1] += 1;
+      default:
+        this.failCondition();
+        this.updateField();
+        this.assessInput();
+    }
+  }
+
+  updateField() {
+  }
+
+  failCondition() {
+    const hole = this.checkHole();
+    const outOfBounds = this.checkBounds();
+
+    if (hole) {
+      console.log('Oh no! You fell into a hole and died!');
+      this.restart();
+    } else if (outOfBounds) {
+      console.log('You fell off the world, falling for eternity, waiting for the end... but it never comes.');
+      this.restart();
+    }
+  }
+
+  restart() {
+    const playerInput = prompt('GAME OVER: Play again? ').toLowerCase();
+
+    if (playerInput === 'yes' || playerInput === 'y') {
+      this.startGame();
+    } else if (playerInput === 'no' || playerInput === 'n') {
+      console.log('Exiting...');
+      process.exit(0);
+    } else {
+      console.log('Invalid input: exiting...')
+      process.exit(0);
+    }
   }
 
   checkHole() {
     const [x, y] = this.playerPosition;
+
     if (this.field[x][y] === hole) {
       return true;
     } else {
       return false;
+    }
+  }
+
+  checkBounds() {
+    const [x, y] = this.playerPosition;
+    if (x < 0 || y < 0) {
+      return true;
     }
   }
 }
