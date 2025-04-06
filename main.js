@@ -8,15 +8,13 @@ const pathCharacter = '*';
 class Field {
   constructor(field) {
     this.field = field;
-    this.playerInput = null;
     this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
     this.gameOver = false;
   }
 
   startGame() {
-    this.playerPosition = [5, 10];
+    this.playerPosition = [0, 0];
     this.gameOver = false;
-    this.print();
     this.assessInput();
   }
 
@@ -27,6 +25,7 @@ class Field {
   }
 
   assessInput() {
+    this.print();
     console.log(`Current position: ${this.playerPosition}`);
     const playerInput = prompt('Which way? ').toLowerCase();
     
@@ -78,6 +77,8 @@ class Field {
   }
 
   updateField() {
+    const [x, y] = this.playerPosition;
+    this.field[x][y] = pathCharacter;
   }
 
   winLoseCondition() {
