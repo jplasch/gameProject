@@ -9,11 +9,13 @@ class Field {
   constructor(field) {
     this.field = field;
     this.playerInput = null;
-    this.playerPosition = [];   // [x-coord, y-coord] where x-axis is up/down and y-axis is left/right
+    this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
+    this.gameOver = false;
   }
 
   startGame() {
-    this.playerPosition = [0, 0];
+    this.playerPosition = [5, 10];
+    this.gameOver = false;
     this.print();
     this.assessInput();
   }
@@ -52,36 +54,60 @@ class Field {
   }
 
   updatePosition(direction) {
-    // running but positions are not being updated correctly
     switch (direction) {
       case 'up':
-        this.playerPosition[0] -= 1;
+        this.playerPosition[0]--;
+        break;
       case 'down':
-        this.playerPosition[0] += 1;
+        this.playerPosition[0]++;
+        break;
       case 'left':
-        this.playerPosition[1] -+ 1;
+        this.playerPosition[1]--;
+        break;
       case 'right':
-        this.playerPosition[1] += 1;
-      default:
-        this.failCondition();
-        this.updateField();
-        this.assessInput();
+        this.playerPosition[1]++;
+        break;
+    }
+
+    this.winLoseCondition();
+
+    if (!this.gameOver) {
+      this.updateField();
+      this.assessInput();
     }
   }
 
   updateField() {
   }
 
-  failCondition() {
-    const hole = this.checkHole();
-    const outOfBounds = this.checkBounds();
-
-    if (hole) {
+  winLoseCondition() {
+    if (this.checkBounds()) {
+      console.log('You fell off the world, destined to fall for Eternity.');
+      this.gameOver = true;
+      this.restart();
+    } else if (this.checkHole()) {
       console.log('Oh no! You fell into a hole and died!');
+      this.gameOver = true;
       this.restart();
-    } else if (outOfBounds) {
-      console.log('You fell off the world, falling for eternity, waiting for the end... but it never comes.');
-      this.restart();
+    } else if (this.checkHat()) {
+      console.log('The Eternal Hat of Aeons has been found!');
+      this.gameOver = true;
+      
+      setTimeout(() => {
+        console.log('As the impending apocalypse looms...');
+      }, 1750);
+      setTimeout(() => {
+        console.log('the possessor of Eternity will Reign Supreme.');
+      }, 4000);
+      setTimeout(() => {
+        console.log('As it may be, that being is YOU!');
+      }, 6250);
+      setTimeout(() => {
+        console.log('And so it begins...');
+      }, 8500);
+      setTimeout(() => {
+        this.restart();
+      }, 9750);
     }
   }
 
@@ -100,7 +126,7 @@ class Field {
   }
 
   checkHole() {
-    const [x, y] = this.playerPosition;
+    const [x, y] = this.playerPosition
 
     if (this.field[x][y] === hole) {
       return true;
@@ -111,8 +137,25 @@ class Field {
 
   checkBounds() {
     const [x, y] = this.playerPosition;
+    const maxXLength = this.field.length;
+    const maxYLength = this.field[0].length;
+
     if (x < 0 || y < 0) {
       return true;
+    } else if (x >= maxXLength || y >= maxYLength) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  checkHat() {
+    const [x, y] = this.playerPosition;
+
+    if (this.field[x][y] === hat) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
