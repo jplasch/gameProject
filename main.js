@@ -23,15 +23,16 @@ class Field {
   constructor() {
     this.field = initialField;
     this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
+    this.hatPosition = [];
     this.gameOver = false;
   }
 
-  static generateField(height = 11, width = 11, ratio = 0.30) {
+  static generateField(height, width, ratio) {
     const newField = [];
     for (let i = 0; i < height; i++) {
       const row = [];
       for (let j = 0; j < width; j++) {
-        if (Math.random() < ratio) {
+        if (Math.random() < Math.min((ratio / 100), 0.6)) {
           row.push(hole);
         } else {
           row.push(fieldCharacter);
@@ -43,14 +44,16 @@ class Field {
   }
 
   startGame() {
+    this.gameOver = false;
+    this.playerPosition = [0, 0];
     const playerInput = prompt('Generate random field? ').toLowerCase();
 
     if (playerInput === 'y' || playerInput === 'yes') {
       const height = parseInt(prompt('Please enter a height: '));
       const width = parseInt(prompt('Please enter a width: '));
-      const ratio = parseFloat(prompt('What percentage of holes? '));
+      const ratio = parseInt(prompt('Hole percentage? '));
 
-      if (typeof height === 'number' && typeof width === 'number' && typeof ratio === 'number' && ratio >= 0 && ratio < 1) {
+      if (typeof height === 'number' && typeof width === 'number' && typeof ratio === 'number' && ratio >= 0 && ratio <= 100) {
         this.field = Field.generateField(height, width, ratio);
       } else {
         console.log('Invalid input. Generating default field...');
@@ -58,8 +61,6 @@ class Field {
       }
     }
 
-    this.playerPosition = [0, 0];
-    this.gameOver = false;
     this.assessInput();
   }
 
@@ -71,7 +72,6 @@ class Field {
 
   assessInput() {
     this.print();
-    console.log(`Current position: ${this.playerPosition}`);
     const playerInput = prompt('Which way? ').toLowerCase();
     
     switch (playerInput) {
