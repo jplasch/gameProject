@@ -229,5 +229,5 @@ class Field {
   }
 }
 
-const myField = new Field();
-myField.startGame();
+const game = new Field();
+game.startGame();
