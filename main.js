@@ -27,6 +27,10 @@ class Field {
     this.gameOver = false;
   }
 
+  static generateRandomInt(n) {
+    return Math.floor(Math.random() * n);
+  }
+
   static generateField(height, width, ratio) {
     const newField = [];
     for (let i = 0; i < height; i++) {
@@ -40,6 +44,15 @@ class Field {
       }
       newField.push(row);
     }
+
+    let [xHat, yHat] = [this.generateRandomInt(height), this.generateRandomInt(width)];
+    newField[0][0] = pathCharacter;
+    while (newField[xHat][yHat] === hole || newField[xHat][yHat] === pathCharacter) {
+      xHat = this.generateRandomInt(height);
+      yHat = this.generateRandomInt(width);
+    }
+
+    newField[xHat][yHat] = hat;
     return newField;
   }
 
