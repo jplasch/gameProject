@@ -1,0 +1,78 @@
+// New maze solver to check field solvability using BFS.
+  // Returns true if a path exists from [0, 0] to the hat.
+  static isSolvable(field) {
+    const height = field.length;
+    const width = field[0].length;
+    const start = [0, 0];
+    // Maintain a visited grid to avoid rechecking cells.
+    const visited = Array.from({ length: height }, () => Array(width).fill(false));
+    // Use a queue for BFS; start from [0,0]
+    const queue = [start];
+    visited[0][0] = true;
+    // Define possible moves: up, down, left, right.
+    const directions = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1]
+    ];
+
+    while (queue.length > 0) {
+      const [x, y] = queue.shift();
+
+      // Found the hat?
+      if (field[x][y] === hat) {
+        return true;
+      }
+
+      // Check the neighbors.
+      for (let [dx, dy] of directions) {
+        const newX = x + dx;
+        const newY = y + dy;
+        // Check bounds.
+        if (newX >= 0 && newX < height && newY >= 0 && newY < width) {
+          // Proceed if not visited and not a hole.
+          if (!visited[newX][newY] && field[newX][newY] !== hole) {
+            visited[newX][newY] = true;
+            queue.push([newX, newY]);
+          }
+        }
+      }
+    }
+    // If the loop finishes without finding the hat, the field isn't solvable.
+    return false;
+  }
+
+  // Generates a random field, ensuring it is solvable.
+  static generateField(height, width, ratio) {
+    let newField;
+    // Continue generating fields until we produce one that is solvable.
+    do {
+      newField = [];
+      for (let i = 0; i < height; i++) {
+        const row = [];
+        for (let j = 0; j < width; j++) {
+          // Limit the ratio to a max of 0.45 to avoid overfilling with holes.
+          if (Math.random() < Math.min(ratio / 100, 0.45)) {
+            row.push(hole);
+          } else {
+            row.push(fieldCharacter);
+          }
+        }
+        newField.push(row);
+      }
+
+      // Place the player start.
+      newField[0][0] = pathCharacter;
+      // Place the hat in a random cell that is not a hole or the starting point.
+      let [xHat, yHat] = [this.generateRandomInt(height), this.generateRandomInt(width)];
+      while (newField[xHat][yHat] === hole || (xHat === 0 && yHat === 0)) {
+        xHat = this.generateRandomInt(height);
+        yHat = this.generateRandomInt(width);
+      }
+      newField[xHat][yHat] = hat;
+      // The while-loop below forces re-generation if the maze isn't solvable.
+    } while (!Field.isSolvable(newField));
+    return newField;
+  }
+
