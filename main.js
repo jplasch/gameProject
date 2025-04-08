@@ -23,8 +23,7 @@ class Field {
   constructor() {
     this.originalField = Field.deepCopy(defaultField);
     this.field = Field.deepCopy(defaultField);
-    this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
-    this.hatPosition = [];
+    this.playerPosition = [];   // [row, col]
     this.gameOver = false;
   }
 
@@ -50,15 +49,21 @@ class Field {
       newField.push(row);
     }
 
+    let [xPath, yPath] = [this.generateRandomInt(height), this.generateRandomInt(width)];
+    while (newField[xPath][yPath] === hole) {
+      xPath = this.generateRandomInt(height);
+      yPath = this.generateRandomInt(width);
+    }
+    newField[xPath][yPath] = pathCharacter;
+
     let [xHat, yHat] = [this.generateRandomInt(height), this.generateRandomInt(width)];
-    newField[0][0] = pathCharacter;
     while (newField[xHat][yHat] === hole || newField[xHat][yHat] === pathCharacter) {
       xHat = this.generateRandomInt(height);
       yHat = this.generateRandomInt(width);
     }
-
     newField[xHat][yHat] = hat;
-    return newField;
+
+    return { newField, startPosition: [xPath, yPath] };
   }
 
   startGame() {
@@ -71,8 +76,10 @@ class Field {
       const width = parseInt(prompt('Please enter a width: '));
       const ratio = parseInt(prompt('Hole percentage? '));
 
-      if (typeof height === 'number' && typeof width === 'number' && typeof ratio === 'number' && ratio >= 0 && ratio <= 100) {
-        this.field = Field.generateField(height, width, ratio);
+      if (!isNaN(height) && !isNaN(width) && !isNaN(ratio) && ratio >= 0 && ratio <= 100) {
+        const result = Field.generateField(height, width, ratio);
+        this.field = result.newField;
+        this.playerPosition = result.startPosition;
       } else {
         console.log('Invalid input. Generating default field...');
         this.field = Field.deepCopy(this.originalField);
