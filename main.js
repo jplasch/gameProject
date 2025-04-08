@@ -4,7 +4,7 @@ const hat = '^';
 const hole = 'O';
 const fieldCharacter = '░';
 const pathCharacter = '*';
-const initialField = [
+const defaultField = [
 
   ['*', '░', '░', '░', 'O', '░', '░', '░', '░', '░', '░'],
   ['O', '░', 'O', 'O', '░', '░', 'O', '░', 'O', '░', '░'],
@@ -21,8 +21,8 @@ const initialField = [
 
 class Field {
   constructor() {
-    this.originalField = Field.deepCopy(initialField);
-    this.field = initialField;
+    this.originalField = Field.deepCopy(defaultField);
+    this.field = Field.deepCopy(defaultField);
     this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
     this.hatPosition = [];
     this.gameOver = false;
@@ -41,7 +41,7 @@ class Field {
     for (let i = 0; i < height; i++) {
       const row = [];
       for (let j = 0; j < width; j++) {
-        if (Math.random() < Math.min((ratio / 100), 0.6)) {
+        if (Math.random() < Math.min((ratio / 100), 0.45)) {
           row.push(hole);
         } else {
           row.push(fieldCharacter);
@@ -229,5 +229,5 @@ class Field {
   }
 }
 
-const myField = new Field(initialField);
+const myField = new Field();
 myField.startGame();
