@@ -21,10 +21,15 @@ const initialField = [
 
 class Field {
   constructor() {
+    this.originalField = Field.deepCopy(initialField);
     this.field = initialField;
     this.playerPosition = [];   // [x-coord, y-coord] -> x-axis: up(-)/down(+), y-axis: left(-)/right(+)
     this.hatPosition = [];
     this.gameOver = false;
+  }
+
+  static deepCopy(field) {
+    return field.map(row => row.slice());
   }
 
   static generateRandomInt(n) {
@@ -70,8 +75,13 @@ class Field {
         this.field = Field.generateField(height, width, ratio);
       } else {
         console.log('Invalid input. Generating default field...');
-        this.field = initialField;
+        this.field = Field.deepCopy(this.originalField);
       }
+    } else if (playerInput === 'n' || playerInput === 'no') {
+      this.field = Field.deepCopy(this.originalField);
+    } else {
+      console.log('Invalid input. Generating default field...');
+      this.field = Field.deepCopy(this.originalField);
     }
 
     this.assessInput();
